@@ -7,10 +7,6 @@
 (scroll-bar-mode -1)
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(company-quickhelp-color-background "#4F4F4F")
@@ -47,10 +43,6 @@
  '(vc-annotate-very-old-color "#DC8CC3"))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 110 :width normal)))))
 
 ;; Package repo
@@ -80,7 +72,8 @@
 
 (require 'org)
 (setq org-todo-keywords
-  '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
+  '((sequence "TODO" "IN-PROGRESS" "WAITING" "FEEDBACK" "VERIFY" "CANCELED" "REPORT" "BUG" "KNOWNCAUSE" "|" "DONE" "DELEGATED" "FIXED" )))
+
 ;; Orgmode a s word Processor
 (setq org-hide-emphasis-markers t)
 ;; Better bullets

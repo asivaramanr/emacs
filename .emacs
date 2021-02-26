@@ -22,7 +22,7 @@
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   '(flycheck auto-complete yaml-mode zenburn-theme cyberpunk-theme json-mode))
+   '(magit flycheck auto-complete yaml-mode zenburn-theme cyberpunk-theme json-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
@@ -61,6 +61,10 @@
 
 (package-initialize)
 ;; (package-refresh-contents)
+
+;; Default Directory Windows ONLY
+(setq default-directory "c:/Users/asivaramanr/OneDrive - DXC Production/Documents/Visualstudio/")
+(setq command-line-default-directory "c:/Users/asivaramanr/OneDrive - DXC Production/Documents/Visualstudio/")
 
 ;; auto-complete
 (require 'auto-complete)

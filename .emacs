@@ -5,20 +5,26 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
+(global-display-line-numbers-mode)
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
- '(custom-enabled-themes '(cyberpunk))
+ '(custom-enabled-themes '(monokai))
  '(custom-safe-themes
-   '("20a8ec387dde11cc0190032a9f838edcc647863c824eed9c8e80a4155f8c6037" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+   '("9abe2b502db3ed511fea7ab84b62096ba15a3a71cdb106fd989afa179ff8ab8d" "20a8ec387dde11cc0190032a9f838edcc647863c824eed9c8e80a4155f8c6037" "78e9a3e1c519656654044aeb25acb8bec02579508c145b6db158d2cfad87c44e" default))
+ '(fci-rule-color "#383838")
  '(initial-frame-alist '((fullscreen . maximized)))
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   '(magit flycheck auto-complete yaml-mode zenburn-theme cyberpunk-theme json-mode))
+   '(python-mode ## monokai-theme flycheck-color-mode-line magit flycheck auto-complete yaml-mode json-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
@@ -43,9 +49,14 @@
  '(vc-annotate-very-old-color "#DC8CC3"))
 
 (custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 110 :width normal)))))
 
 ;; Package repo
+
 (require 'package)
 
 (add-to-list 'package-archives
@@ -59,22 +70,33 @@
 (setq command-line-default-directory "c:/Users/asivaramanr/OneDrive - DXC Production/Documents/Visualstudio/")
 
 ;; auto-complete
-(require 'auto-complete)
+(
+  require 'auto-complete)
 (global-auto-complete-mode t)
 (set-default 'ac-modes
              '(
+               python-mode
                yaml-mode 
                json-mode
                org-mode
                ))
 
+;; flycheck config
+
+(add-hook 'after-init-hook 'global-flycheck-mode)
+(setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list)
+
+(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)
+
+
 ;;Org mode 
 
 (require 'org)
 (setq org-todo-keywords
-  '((sequence "TODO" "IN-PROGRESS" "WAITING" "FEEDBACK" "VERIFY" "CANCELED" "REPORT" "BUG" "KNOWNCAUSE" "|" "DONE" "DELEGATED" "FIXED" )))
+  '((sequence "TODO" "IN-PROGRESS" "WAITING" "VERIFY" "CANCELED" "KNOWNCAUSE" "|" "DONE" "DELEGATED" "FIXED" )))
 
-;; Orgmode a s word Processor
+;; Orgmode as word Processor
+
 (setq org-hide-emphasis-markers t)
 ;; Better bullets
  (font-lock-add-keywords 'org-mode
@@ -82,8 +104,8 @@
                                (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; JSON mode
+
 (require 'json-mode)
-(add-hook 'json-mode-hook #'flycheck-mode)
 
 ;;Yaml mode
 

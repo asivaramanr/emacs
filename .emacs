@@ -24,7 +24,7 @@
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(package-selected-packages
-   '(python-mode ## monokai-theme flycheck-color-mode-line magit flycheck auto-complete yaml-mode json-mode))
+   '(ansible powershell python-mode ## monokai-theme flycheck-color-mode-line magit flycheck auto-complete yaml-mode json-mode))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
@@ -79,15 +79,15 @@
                yaml-mode 
                json-mode
                org-mode
+               powershell-mode
+               ansible
                ))
 
 ;; flycheck config
 
 (add-hook 'after-init-hook 'global-flycheck-mode)
-(setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list)
-
 (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)
-
+(setq flycheck-display-errors-function #'flycheck-display-error-messages-unless-error-list)
 
 ;;Org mode 
 
@@ -111,7 +111,12 @@
 
 (require 'yaml-mode)
    (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+   (add-hook 'yaml-mode-hook '(lambda () (ansible 1)))
+   (add-hook 'yaml-mode-hook '(lambda () (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
-(add-hook 'yaml-mode-hook
-          (lambda ()
-            (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+;; ansible
+
+;;(setq ansible-vault-password-file "path/to/pwd/file")
+(global-set-key (kbd "C-c b") 'ansible-decrypt-buffer)
+(global-set-key (kbd "C-c g") 'ansible-encrypt-buffer)
+(add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)

@@ -90,7 +90,7 @@
 
 (global-company-mode)         ;; global company-mode
 
-;; (windmove-default-keybindings)      ;; Move windows by SHIFT + Arrow
+
 
 ;; ===================================
 
@@ -137,6 +137,18 @@
 
 ;; ====================================
 
+;; neotree
+
+(add-to-list 'load-path "C:\\Users\\0018SI744\\AppData\\Roaming\\.emacs.d\\elpa\\neotree-0.5.2")
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+
+;; ====================================
+
+;; Python
+
+;; ====================================
+
 ;; Enable elpy
 
 (elpy-enable)
@@ -155,6 +167,24 @@
 
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
+;; Enable electric-pair
+
+(defun electric-pair ()
+  "If at end of line, insert character pair without surrounding spaces.
+   Otherwise, just insert the typed character."
+  (interactive)
+  (if (eolp) (let (parens-require-spaces) (insert-pair)) 
+    (self-insert-command 1)))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (define-key python-mode-map "\"" 'electric-pair)
+            (define-key python-mode-map "\'" 'electric-pair)
+            (define-key python-mode-map "(" 'electric-pair)
+            (define-key python-mode-map "[" 'electric-pair)
+            (define-key python-mode-map "'" 'electric-pair)
+            (define-key python-mode-map "{" 'electric-pair)))
+
 ;; ===================================
 
 ;; User-Defined init.el ends here
@@ -166,7 +196,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(projectile better-defaults)))
+ '(package-selected-packages
+   '(all-the-icons-ibuffer all-the-icons-ivy all-the-icons-ivy-rich all-the-icons-dired all-the-icons neotree projectile better-defaults)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -90,8 +90,6 @@
 
 (global-company-mode)         ;; global company-mode
 
-
-
 ;; ===================================
 
 ;; Org mode 
@@ -187,6 +185,27 @@
 
 ;; ===================================
 
+;; yaml-mode
+
+;; ===================================
+
+
+(require 'yaml-mode)
+    (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+
+
+(add-hook 'yaml-mode-hook
+      '(lambda ()
+        (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+
+(require 'docker-compose-mode)
+
+;; ===================================
+
 ;; User-Defined init.el ends here
 
 ;; ===================================
@@ -197,7 +216,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(all-the-icons-ibuffer all-the-icons-ivy all-the-icons-ivy-rich all-the-icons-dired all-the-icons neotree projectile better-defaults)))
+   '(powershell docker-compose-mode dockerfile-mode yaml-mode all-the-icons-ibuffer all-the-icons-ivy all-the-icons-ivy-rich all-the-icons-dired all-the-icons neotree projectile better-defaults)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

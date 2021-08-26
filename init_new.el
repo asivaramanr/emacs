@@ -16,7 +16,8 @@
 
 (add-to-list 'package-archives
 
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+             '("melpa-stable" . "https://stable.melpa.org/packages/") 
+             '("org" . "https://orgmode.org/elpa/"))
 
 
 ;; Initializes the package infrastructure
@@ -31,13 +32,25 @@
 
 ;; Installs packages
 
-;;
-
 ;; myPackages contains a list of package names
 
 (defvar myPackages
 
   '(better-defaults                 ;; Set up some better Emacs defaults
+
+    vscode-dark-plus-theme          ;; Theme
+
+    projectile                     ;; open files within projects
+
+    solaire-mode                    ;; solaire folder view
+   
+   auto-complete                  ;; auto-completion for codes
+
+    magit 			  ;; github
+
+    neotree                        ;; neotree side view
+
+    org-bullets                    ;; for org mode
 
     elpy                            ;; Emacs Lisp Python Environment
 
@@ -45,9 +58,14 @@
 
     py-autopep8                     ;; Run autopep8 on save
 
-    vscode-dark-plus-theme          ;; Theme
+   python-black                   ;; python buffer formating
 
-    solaire-mode                    ;; solaire folder view
+    docker-compose-mode            ;; docker-compose
+
+    dockerfile-mode                ;; docker file
+
+    yaml-mode                      ;; yaml mode
+
 
     )
 
@@ -76,19 +94,38 @@
 
 (add-hook 'window-setup-hook 'toggle-frame-maximized t) ;; Maximize window while startup
 
-(setq inhibit-startup-message t)    ;; Hide the startup message
+(setq inhibit-startup-message t)    			;; Hide the startup message
 
-(global-linum-mode t)               ;; Enable line numbers globally
+(global-linum-mode t)               			;; Enable line numbers globally
 
-(setq linum-format "%4d ")	    ;; Default indend after line number	
+(setq linum-format "%4d ")	    			;; Default indend after line number
 
-(solaire-global-mode +1)            ;; Folder view
+(show-paren-mode 1)					;; shows pair brackets	
 
-(load-theme 'vscode-dark-plus t)    ;; Visual Studio Code Theme 
+;;(global-hl-line-mode)        				;; Highlighting the Current Line
 
-(ac-config-default)           ;; autocomplete
+(load-theme 'vscode-dark-plus t)    			;; Visual Studio Code Theme 
 
-(global-company-mode)         ;; global company-mode
+(solaire-global-mode +1)            			;; Folder view
+
+(ac-config-default)           				;; autocomplete
+
+;; ===================================
+
+;; projectile
+
+;; ===================================
+
+(projectile-mode +1)
+
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+(setq projectile-indexing-method 'alien)
+
+(setq projectile-sort-order 'default)
+
+(setq projectile-enable-caching t)
+
 
 ;; ===================================
 
@@ -96,16 +133,41 @@
 
 ;; ===================================
 
-(setq org-support-shift-select t)
-(require 'org)
-(setq org-todo-keywords
-  '((sequence "TODO" "IN-PROGRESS" "WAITING" "VERIFY" "ISSUE" "TESTING" "|" "COMPLETED" "FIXED" )))
+;; Default Directories
 
-;; Color for TODO's
+(string-equal system-type "windows-nt")
+
+(setq org-directory (expand-file-name "C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
+(setq org-agenda-files '("C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
+
+;; Keyword sequence
+
+(setq org-todo-keywords
+  '(
+   (sequence "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "REPEAT(r)" "ON-HOLD(h)" "VERIFY(v)" "|" "DONE(d)" "COMPLETED(d)") 
+   (sequence "BUG(b)" "ISSUE(i)" "TESTING(t)" "|" "FIXED(f)")
+   
+   ))
+
+;; keyword Color
+
 (setq org-todo-keyword-faces
- '(("TODO" . "yellow") ("IN-PROGRESS" . "orange") ("ISSUE" . "orange") ("TESTING" . "yellow") ("WAITING" . "magenta") 
- ("VERIFY" . "cyan") ("COMPLETED" . "green") ("FIXED" . "green"))
- )
+ '(("TODO" . "GoldenRod") 
+   ("STARTED" . "yellow") 
+   ("NEXT" . "IndianRed1") 
+   ("WAITING" . "coral")
+   ("REPEAT" . "red") 
+   ("ON-HOLD" . "magenta")
+   ("VERIFY" . "cyan") 
+   ("BUG" . "red") 
+   ("ISSUE" . "orange") 
+   ("TESTING" . "yellow") 
+   ("FIXED" . "green")
+   ("COMPLETED" . "green")  
+   ("DONE" . "green"))
+  )
+
+
 
 ;; Orgmode Bullets
 
@@ -113,21 +175,32 @@
 ;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
-;; Org-mode Priority color
+;; Orgmode priority color
 
 (setq org-priority-faces '((?A . (:foreground "red" :weight 'bold))
                            (?B . (:foreground "yellow"))
                            (?C . (:foreground "green"))))
 
+;; Orgmode Agenda
+
+(require 'org)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+
+;; Orgmode blank line
+
+(setq org-blank-before-new-entry
+	'((heading . nil) (plain-list-item . nil)))
+
 ;; ===================================
 
-;; Default Directory Windows ONLY
+;; Default Directory
 
 ;; ===================================
 
-(setq default-directory "C:\\Users\\0018SI744\\GITHUB")
+(setq default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
 
-(setq command-line-default-directory "C:\\Users\\0018SI744\\GITHUB")
+(setq command-line-default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
 
 ;; ====================================
 
@@ -137,9 +210,13 @@
 
 ;; neotree
 
-(add-to-list 'load-path "C:\\Users\\0018SI744\\AppData\\Roaming\\.emacs.d\\elpa\\neotree-0.5.2")
-(require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
+
+;; Work with Projectile
+
+(setq projectile-switch-project-action 'neotree-projectile-action)
+
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 ;; ====================================
 
@@ -154,41 +231,30 @@
 ;; Enable Flycheck
 
 (when (require 'flycheck nil t)
-
+ ;; (setq flycheck-highlighting-mode 'lines)
+  (setq flycheck-indication-mode 'left-fringe)
+  (setq flycheck-checker-error-threshold 2000)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-
   (add-hook 'elpy-mode-hook 'flycheck-mode))
+
 
 ;; Enable autopep8
 
 (require 'py-autopep8)
-
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-;; Enable electric-pair
 
-(defun electric-pair ()
-  "If at end of line, insert character pair without surrounding spaces.
-   Otherwise, just insert the typed character."
-  (interactive)
-  (if (eolp) (let (parens-require-spaces) (insert-pair)) 
-    (self-insert-command 1)))
+;; python-black
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (define-key python-mode-map "\"" 'electric-pair)
-            (define-key python-mode-map "\'" 'electric-pair)
-            (define-key python-mode-map "(" 'electric-pair)
-            (define-key python-mode-map "[" 'electric-pair)
-            (define-key python-mode-map "'" 'electric-pair)
-            (define-key python-mode-map "{" 'electric-pair)))
+;;(add-hook 'elpy-mode-hook 'python-black-buffer)
+;;(add-hook 'elpy-mode-hook 'python-black-on-save-mode-enable-dwim)
+
 
 ;; ===================================
 
 ;; yaml-mode
 
 ;; ===================================
-
 
 (require 'yaml-mode)
     (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
@@ -198,6 +264,11 @@
       '(lambda ()
         (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
+;; ===================================
+
+;; Docker
+
+;; ===================================
 
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
@@ -209,17 +280,3 @@
 ;; User-Defined init.el ends here
 
 ;; ===================================
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(powershell docker-compose-mode dockerfile-mode yaml-mode all-the-icons-ibuffer all-the-icons-ivy all-the-icons-ivy-rich all-the-icons-dired all-the-icons neotree projectile better-defaults)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

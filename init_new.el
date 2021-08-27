@@ -1,33 +1,23 @@
 ;; .emacs.d/init.el
 
-
 ;; ===================================
 
 ;; MELPA Package Support
 
 ;; ===================================
 
-;; Enables basic packaging support
+;; Enables MELPA Stable  packaging support
 
 (require 'package)
 
-
-;; Adds the Melpa archive to the list of available repositories
-
 (add-to-list 'package-archives
-
-             '("melpa-stable" . "https://stable.melpa.org/packages/") 
-             '("org" . "https://orgmode.org/elpa/"))
-
-
-;; Initializes the package infrastructure
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 (package-initialize)
 
 ;; If there are no archived package contents, refresh them
 
 (when (not package-archive-contents)
-
   (package-refresh-contents))
 
 ;; Installs packages
@@ -36,36 +26,37 @@
 
 (defvar myPackages
 
-  '(better-defaults                 ;; Set up some better Emacs defaults
+  '(better-defaults               ;; Set up some better Emacs defaults
 
-    vscode-dark-plus-theme          ;; Theme
+    vscode-dark-plus-theme        ;; Theme
 
-    projectile                     ;; open files within projects
+    projectile                    ;; open files within projects
 
-    solaire-mode                    ;; solaire folder view
+    solaire-mode                  ;; solaire folder view
    
-   auto-complete                  ;; auto-completion for codes
+    auto-complete                 ;; auto-completion for codes
 
     magit 			  ;; github
 
-    neotree                        ;; neotree side view
+    neotree                       ;; neotree side view
 
-    org-bullets                    ;; for org mode
+    org-bullets                   ;; for org mode
 
-    elpy                            ;; Emacs Lisp Python Environment
+    elpy                          ;; Emacs Lisp Python Environment
 
-    flycheck                        ;; On the fly syntax checking
+    flycheck                      ;; On the fly syntax checking
 
-    py-autopep8                     ;; Run autopep8 on save
+    py-autopep8                   ;; Run autopep8 on save
 
-   python-black                   ;; python buffer formating
+    python-black                     ;; Black formatting on save
 
-    docker-compose-mode            ;; docker-compose
+    docker-compose-mode           ;; docker-compose
 
-    dockerfile-mode                ;; docker file
+    dockerfile-mode               ;; docker file
 
-    yaml-mode                      ;; yaml mode
+    yaml-mode                     ;; yaml mode
 
+    all-the-icons                 ;; icons for neotree
 
     )
 
@@ -73,16 +64,10 @@
 
 ;; Scans the list in myPackages
 
-;; If the package listed is not already installed, install it
-
 (mapc #'(lambda (package)
-
           (unless (package-installed-p package)
-
             (package-install package)))
-
       myPackages)
-
 
 ;; ===================================
 
@@ -90,25 +75,34 @@
 
 ;; ===================================
 
-(setq message-log-max t)
+(setq message-log-max t)				         ;;message log
 
-(add-hook 'window-setup-hook 'toggle-frame-maximized t) ;; Maximize window while startup
+(add-to-list 'default-frame-alist '(fullscreen . maximized))     ;; Maximize window while startup
 
-(setq inhibit-startup-message t)    			;; Hide the startup message
+(setq inhibit-startup-message t)    			         ;; Hide the startup message
 
-(global-linum-mode t)               			;; Enable line numbers globally
+(global-linum-mode t)               			         ;; Enable line numbers globally
 
-(setq linum-format "%4d ")	    			;; Default indend after line number
+(setq linum-format "%4d ")	    			         ;; Default indend after line number
 
-(show-paren-mode 1)					;; shows pair brackets	
+(show-paren-mode 1)					         ;; shows pair brackets	
 
-;;(global-hl-line-mode)        				;; Highlighting the Current Line
+;;(global-hl-line-mode)        				         ;; Highlighting the Current Line
 
-(load-theme 'vscode-dark-plus t)    			;; Visual Studio Code Theme 
+(load-theme 'vscode-dark-plus t)    			         ;; Visual Studio Code Theme 
 
-(solaire-global-mode +1)            			;; Folder view
+(solaire-global-mode +1)            			         ;; Folder view
 
-(ac-config-default)           				;; autocomplete
+(ac-config-default)           				         ;; autocomplete
+
+;; ===================================
+
+;; Default Directory
+
+;; ===================================
+
+(setq default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
+(setq command-line-default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
 
 ;; ===================================
 
@@ -119,13 +113,53 @@
 (projectile-mode +1)
 
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
 (setq projectile-indexing-method 'alien)
-
 (setq projectile-sort-order 'default)
-
 (setq projectile-enable-caching t)
 
+;; ===================================
+
+;; neotree
+
+;; ===================================
+
+(global-set-key [f8] 'neotree-toggle)
+
+(setq neo-autorefresh nil)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+
+;; Work with Projectile
+
+(setq projectile-switch-project-action 'neotree-projectile-action)
+
+(defun my-neotree-project-dir-toggle ()
+ (interactive)
+  (require 'neotree)
+  (let* ((filepath (buffer-file-name))
+         (project-dir
+          (with-demoted-errors
+              (cond
+               ((featurep 'projectile)
+                (projectile-project-root))
+               ((featurep 'find-file-in-project)
+                (ffip-project-root))
+               (t ;; Fall back to version control root.
+                (if filepath
+                    (vc-call-backend
+                     (vc-responsible-backend filepath) 'root filepath)
+                  nil)))))
+         (neo-smart-open t))
+
+    (if (and (fboundp 'neo-global--window-exists-p)
+             (neo-global--window-exists-p))
+        (neotree-hide)
+      (neotree-show)
+      (when project-dir
+        (neotree-dir project-dir))
+      (when filepath
+        (neotree-find filepath)))))
+
+(define-key global-map (kbd "M-e") 'my-neotree-project-dir-toggle)
 
 ;; ===================================
 
@@ -133,41 +167,71 @@
 
 ;; ===================================
 
+(require 'org)
+
+;; Orgmode Agenda
+
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+(setq org-agenda-include-diary t)
+
 ;; Default Directories
 
-(string-equal system-type "windows-nt")
+  (setq org-directory (expand-file-name "C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
+  (setq org-agenda-files '("C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
 
-(setq org-directory (expand-file-name "C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
-(setq org-agenda-files '("C:\\Users\\AswinSivaramanR\\Documents\\github\\org"))
+;; Agenda style
+
+(setq org-agenda-breadcrumbs-separator " ❱ "
+      org-agenda-current-time-string "⏰ ┈┈┈┈┈┈┈┈┈┈┈ now"
+      org-agenda-time-grid '((weekly today require-timed)
+                             (800 1000 1200 1400 1600 1800 2000)
+                             "---" "┈┈┈┈┈┈┈┈┈┈┈┈┈")
+      org-agenda-prefix-format '((agenda . "%i %-12:c%?-12t%b% s")
+                                 (todo . " %i %-12:c")
+                                 (tags . " %i %-12:c")
+                                 (search . " %i %-12:c")))
+
+(setq org-agenda-format-date (lambda (date) (concat "\n" (make-string (window-width) 9472)
+                                                    "\n"
+                                                    (org-agenda-format-date-aligned date))))
+(setq org-cycle-separator-lines 2)
+(require 'all-the-icons)
+(setq org-agenda-category-icon-alist
+      `(("Work" ,(list (all-the-icons-faicon "cogs")) nil nil :ascent center)
+        ("Personal" ,(list (all-the-icons-material "person")) nil nil :ascent center)
+        ("Calendar" ,(list (all-the-icons-faicon "calendar")) nil nil :ascent center)
+        ("Reading" ,(list (all-the-icons-faicon "book")) nil nil :ascent center)))
+
 
 ;; Keyword sequence
 
 (setq org-todo-keywords
   '(
-   (sequence "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "REPEAT(r)" "ON-HOLD(h)" "VERIFY(v)" "|" "DONE(d)" "COMPLETED(d)") 
-   (sequence "BUG(b)" "ISSUE(i)" "TESTING(t)" "|" "FIXED(f)")
+    (sequence "TODO(t)" "STARTED(s)" "NEXT(n)" "WAITING(w)" "CANCELLED(c)" "REPEAT(r)"
+              "HOLD(h)" "VERIFY(v)" "|" "DONE(d)" "DELEGATE(d)") 
+    (sequence "BUG(b)" "ISSUE(i)" "TESTING(t)" "|" "FIXED(f)")
    
    ))
 
-;; keyword Color
+;; Faces
 
 (setq org-todo-keyword-faces
  '(("TODO" . "GoldenRod") 
    ("STARTED" . "yellow") 
    ("NEXT" . "IndianRed1") 
    ("WAITING" . "coral")
+   ("CANCELLED"  . "amber")
    ("REPEAT" . "red") 
-   ("ON-HOLD" . "magenta")
+   ("HOLD" . "magenta")
    ("VERIFY" . "cyan") 
    ("BUG" . "red") 
    ("ISSUE" . "orange") 
    ("TESTING" . "yellow") 
    ("FIXED" . "green")
-   ("COMPLETED" . "green")  
+   ("DELEGATE" . "forest green")  
    ("DONE" . "green"))
   )
-
-
 
 ;; Orgmode Bullets
 
@@ -181,42 +245,9 @@
                            (?B . (:foreground "yellow"))
                            (?C . (:foreground "green"))))
 
-;; Orgmode Agenda
-
-(require 'org)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
-
-;; Orgmode blank line
-
-(setq org-blank-before-new-entry
-	'((heading . nil) (plain-list-item . nil)))
-
-;; ===================================
-
-;; Default Directory
-
-;; ===================================
-
-(setq default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
-
-(setq command-line-default-directory "C:\\Users\\AswinSivaramanR\\Documents\\github")
-
 ;; ====================================
-
 ;; Development Setup
-
 ;; ====================================
-
-;; neotree
-
-(global-set-key [f8] 'neotree-toggle)
-
-;; Work with Projectile
-
-(setq projectile-switch-project-action 'neotree-projectile-action)
-
-(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 ;; ====================================
 
@@ -237,18 +268,10 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
-
 ;; Enable autopep8
 
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-
-
-;; python-black
-
-;;(add-hook 'elpy-mode-hook 'python-black-buffer)
-;;(add-hook 'elpy-mode-hook 'python-black-on-save-mode-enable-dwim)
-
+;;(require 'py-autopep8)
+;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
 ;; ===================================
 
@@ -280,3 +303,16 @@
 ;; User-Defined init.el ends here
 
 ;; ===================================
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(all-the-icons dockerfile-mode docker-compose-mode vscode-dark-plus-theme solaire-mode py-autopep8 projectile org-bullets neotree magit flycheck elpy better-defaults auto-complete)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

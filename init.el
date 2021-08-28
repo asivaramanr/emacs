@@ -26,7 +26,9 @@
 
 (defvar myPackages
 
-  '(better-defaults               ;; Set up some better Emacs defaults
+  '(use-package                   ;; Load Packages
+
+    better-defaults               ;; Set up some better Emacs defaults
 
     vscode-dark-plus-theme        ;; Theme
 
@@ -59,7 +61,6 @@
     all-the-icons                 ;; icons for neotree
 
     )
-
   )
 
 ;; Scans the list in myPackages
@@ -68,6 +69,8 @@
           (unless (package-installed-p package)
             (package-install package)))
       myPackages)
+
+(require 'use-package)
 
 ;; ===================================
 
@@ -89,7 +92,7 @@
 
 ;;(global-hl-line-mode)        				         ;; Highlighting the Current Line
 
-(load-theme 'vscode-dark-plus t)    			         ;; Visual Studio Code Theme 
+(load-theme 'vscode-dark-plus t)    			         ;; Visual Studio Code Theme
 
 (solaire-global-mode +1)            			         ;; Folder view
 
@@ -130,7 +133,7 @@
 (global-set-key [f8] 'neotree-toggle)
 
 (setq neo-autorefresh nil)
-(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+;;(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
 
 ;; Work with Projectile
 
@@ -253,11 +256,12 @@
 ;; Development Setup
 ;; ====================================
 
-;; ====================================
-
 ;; Python
 
-;; ====================================
+
+(setq python-indent-guess-indent-offset t)  
+(setq python-indent-guess-indent-offset-verbose nil)
+(global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#  ")))
 
 ;; Enable elpy
 
@@ -269,19 +273,13 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
-
-(require 'yasnippet)
-
 ;; Enable autopep8
 
 (require 'py-autopep8)
 (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
 
-;; ===================================
 
 ;; yaml-mode
-
-;; ===================================
 
 (require 'yaml-mode)
     (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
@@ -291,32 +289,14 @@
       '(lambda ()
         (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
-;; ===================================
 
 ;; Docker
-
-;; ===================================
 
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 (require 'docker-compose-mode)
 
-;; ===================================
-
 ;; User-Defined init.el ends here
 
 ;; ===================================
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-jedi all-the-icons dockerfile-mode docker-compose-mode vscode-dark-plus-theme solaire-mode py-autopep8 projectile org-bullets neotree magit flycheck elpy better-defaults auto-complete)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
